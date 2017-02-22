@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SFLocalizationUtils : NSObject
+@interface IDLocalizer : NSObject
 
 // ******* INITIALIZATORS ******* //
 + (instancetype)defaultLocalizer;

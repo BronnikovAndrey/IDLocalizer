@@ -15,14 +15,14 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
 static NSString * const kEnglishLanguageCodeKey = @"en";
 static NSString * const kRussianLanguageCodeKey = @"ru";
 
-@interface SFLocalizationUtils ()
+@interface IDLocalizer ()
 
 @property (strong, nonatomic, readwrite) NSBundle *permanentBundle;
 @property (strong, nonatomic, readwrite) NSString *permanentTable;
 
 @end
 
-@implementation SFLocalizationUtils
+@implementation IDLocalizer
 
 #pragma mark - Initializators
 + (instancetype)defaultLocalizer {
