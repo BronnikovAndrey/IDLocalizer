@@ -6,7 +6,7 @@
 //  Copyright © 2016 ImproveGroup. All rights reserved.
 //
 
-#import "SFLocalizationUtils.h"
+#import "IDLocalizer.h"
 #import <objc/runtime.h>
 
 static NSString * const kDefaultTableNameKey = @"Localizable";
