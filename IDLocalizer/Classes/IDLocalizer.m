@@ -27,7 +27,7 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
 #pragma mark - Initializators
 + (instancetype)defaultLocalizer {
     if (self == [self class]) {
-        SFLocalizationUtils *localizer = [[[self class] alloc] initWithTable:kDefaultTableNameKey bundle:[self currentBundle] localizablePostfix:YES];
+        IDLocalizer *localizer = [[[self class] alloc] initWithTable:kDefaultTableNameKey bundle:[self currentBundle] localizablePostfix:YES];
         return localizer;
     }
     return nil;
