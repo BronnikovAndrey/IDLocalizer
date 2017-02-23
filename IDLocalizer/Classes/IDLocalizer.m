@@ -8,12 +8,9 @@
 
 #import "IDLocalizer.h"
 #import <objc/runtime.h>
+#import "NSBundle+IDBundle"
 
 static NSString * const kDefaultTableNameKey = @"Localizable";
-
-// Language codes
-static NSString * const kEnglishLanguageCodeKey = @"en";
-static NSString * const kRussianLanguageCodeKey = @"ru";
 
 @interface IDLocalizer ()
 
@@ -27,7 +24,7 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
 #pragma mark - Initializators
 + (instancetype)defaultLocalizer {
     if (self == [self class]) {
-        IDLocalizer *localizer = [[[self class] alloc] initWithTable:kDefaultTableNameKey bundle:[self currentBundle] localizablePostfix:YES];
+        IDLocalizer *localizer = [[[self class] alloc] initWithTable:kDefaultTableNameKey bundle:[NSBundle currentBundle] localizablePostfix:YES];
         return localizer;
     }
     return nil;
@@ -49,6 +46,7 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
             totalTableString = [totalTableString stringByAppendingString:kDefaultTableNameKey];
         }
         _permanentTable = totalTableString;
+        _permanentBundle = bundle;
     }
     return self;
 }
@@ -82,27 +80,6 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
         localizedString = [[NSBundle mainBundle] localizedStringForKey:key value:key table:nil];
     }
     return localizedString;
-}
-
-
-#pragma mark - Bundles
-+ (NSBundle *)russianBundle {
-    return [self bundleWithLanguageCode:kRussianLanguageCodeKey];
-}
-
-+ (NSBundle *)englishBundle {
-    return [self bundleWithLanguageCode:kEnglishLanguageCodeKey];
-}
-
-+ (NSBundle *)currentBundle {
-    NSString *currentLanguageCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-    return [self bundleWithLanguageCode:currentLanguageCode];
-}
-
-+ (NSBundle *)bundleWithLanguageCode: (NSString *)languageCode {
-    NSString *ruLocaleBundleString = [[NSBundle mainBundle] pathForResource:languageCode ofType:@"lproj"];
-    NSBundle *languageBundle = [NSBundle bundleWithPath:ruLocaleBundleString];
-    return languageBundle;
 }
 
 #pragma mark - Runtime

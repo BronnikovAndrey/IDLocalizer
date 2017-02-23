@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'IDLocalizer'
-  s.version          = '0.0.1'
-  s.summary          = 'Independent Localizer'
+  s.version          = '0.0.2'
+  s.summary          = 'Independent Localizer for VIPER'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,24 +17,15 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = 'Description for our dependency'
+  s.description      = 'A solution to localize your applications'
 
   s.homepage         = 'https://BronnikovAndrey@github.com/BronnikovAndrey/IDTouchIDManager'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'BronnikovAndrey' => 'bronnikov@improveitgroup.com' }
-  s.source           = { :git => 'https://BronnikovAndrey@github.com/BronnikovAndrey/IDLocalizer.git', :tag => '0.0.1' }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => 'https://BronnikovAndrey@github.com/BronnikovAndrey/IDLocalizer.git', :tag => '0.0.2' }
 
   s.ios.deployment_target = '8.0'
-
   s.source_files = 'IDLocalizer/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'IDLocalizer' => ['IDLocalizer/Assets/*.png']
-  # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
