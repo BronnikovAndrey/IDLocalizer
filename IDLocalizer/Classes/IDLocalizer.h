@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NSBundle+IDBundle.h"
 
 @interface IDLocalizer : NSObject
 

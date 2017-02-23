@@ -8,7 +8,6 @@
 
 #import "IDLocalizer.h"
 #import <objc/runtime.h>
-#import "NSBundle+IDBundle"
 
 static NSString * const kDefaultTableNameKey = @"Localizable";
 
