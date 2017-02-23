@@ -116,12 +116,12 @@ NSArray *loc_allProtocolMethods(Protocol *protocol) {
         [anInvocation setReturnValue:&newValue];
     }
     else {
-        NSLog(@"WARNING: Localizer didn't find method, which returns \"%@\". Check method in your localize module protocol or IDLocalizerProtocol.h", selectorString);
+        NSLog(@"WARNING: Localizer didn't find method, which returns string \"%@\". Check method in your localize module protocol or IDLocalizerProtocol.h", selectorString);
     }
 }
 
 - (Protocol *)protocolOfClass: (Class)class {
-    NSString *protocolString = [NSString stringWithFormat:@"%@Protocol", NSStringFromClass([IDLocalizer class])];
+    NSString *protocolString = [NSString stringWithFormat:@"%@Protocol", NSStringFromClass(class)];
     Protocol *protocol = (NSProtocolFromString(protocolString));
     return protocol;
 }
