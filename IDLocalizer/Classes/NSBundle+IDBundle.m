@@ -33,8 +33,4 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
     return [self bundleWithLanguageCode:kRussianLanguageCodeKey];
 }
 
-
-
-
-
 @end

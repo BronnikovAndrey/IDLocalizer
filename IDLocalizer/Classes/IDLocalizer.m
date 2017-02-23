@@ -102,15 +102,28 @@ NSArray *loc_allProtocolMethods(Protocol *protocol) {
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
     NSString *selectorString = NSStringFromSelector([anInvocation selector]);
     
-    NSString *currentProtocolString = [NSString stringWithFormat:@"%@Protocol", NSStringFromClass([self class])];
-    Protocol *currentProtocol = (NSProtocolFromString(currentProtocolString));
-    if ([loc_allProtocolMethods (currentProtocol) containsObject:selectorString]) {
+    Protocol *rootProtocol = [self protocolOfClass:[IDLocalizer class]];
+    Protocol *currentProtocol = [self protocolOfClass:[self class]];
+    
+    BOOL isMethodFromRoot =
+    [loc_allProtocolMethods (rootProtocol) containsObject:selectorString];
+    
+    BOOL isMethodFromCurrent =
+    [loc_allProtocolMethods (currentProtocol) containsObject:selectorString];
+    
+    if (isMethodFromCurrent || isMethodFromRoot) {
         NSString *newValue = [self localizedStringAtKey: selectorString];
         [anInvocation setReturnValue:&newValue];
     }
     else {
-        NSLog(@"WARNING: Localizer didn't find property");
+        NSLog(@"WARNING: Localizer didn't find method, which returns \"%@\". Check method in your localize module protocol or IDLocalizerProtocol.h", selectorString);
     }
+}
+
+- (Protocol *)protocolOfClass: (Class)class {
+    NSString *protocolString = [NSString stringWithFormat:@"%@Protocol", NSStringFromClass([IDLocalizer class])];
+    Protocol *protocol = (NSProtocolFromString(protocolString));
+    return protocol;
 }
 
 @end
