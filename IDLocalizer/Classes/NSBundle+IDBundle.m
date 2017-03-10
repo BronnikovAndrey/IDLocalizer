@@ -14,23 +14,11 @@ static NSString * const kRussianLanguageCodeKey = @"ru";
 
 @implementation NSBundle (IDBundle)
 
-+ (NSBundle *)bundleWithLanguageCode: (NSString *)languageCode {
-    NSString *ruLocaleBundleString = [[NSBundle mainBundle] pathForResource:languageCode ofType:@"lproj"];
-    NSBundle *languageBundle = [NSBundle bundleWithPath:ruLocaleBundleString];
++ (NSBundle *)bundleWithLocale: (NSLocale *)locale {
+    NSString *currentLanguageCode = [locale objectForKey:NSLocaleLanguageCode];
+    NSString *localeBundleString = [[NSBundle mainBundle] pathForResource:currentLanguageCode ofType:@"lproj"];
+    NSBundle *languageBundle = [NSBundle bundleWithPath:localeBundleString];
     return languageBundle;
-}
-
-+ (NSBundle *)currentBundle {
-    NSString *currentLanguageCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-    return [self bundleWithLanguageCode:currentLanguageCode];
-}
-
-+ (NSBundle *)englishBundle {
-    return [self bundleWithLanguageCode:kEnglishLanguageCodeKey];
-}
-
-+ (NSBundle *)russianBundle {
-    return [self bundleWithLanguageCode:kRussianLanguageCodeKey];
 }
 
 @end

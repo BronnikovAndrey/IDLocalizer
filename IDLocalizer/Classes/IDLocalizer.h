@@ -14,27 +14,28 @@
 // ******* INITIALIZATORS ******* //
 + (instancetype)defaultLocalizer;
 
-- (instancetype)initWithTable: (NSString *)table;
+- (instancetype)initWithLocale: (NSLocale *)locale
+                         table: (NSString *)table;
 
-- (instancetype)initWithTable:(NSString *)table
-                       bundle:(NSBundle *)bundle
-           localizablePostfix:(BOOL)postfix;
+- (instancetype)initWithLocale: (NSLocale *)locale
+                        tables: (NSArray <NSString *>*)tables;
+
 
 // ******* PROPERTIES ******* //
-@property (strong, nonatomic, readonly) NSBundle *permanentBundle;
-@property (strong, nonatomic, readonly) NSString *permanentTable;
+@property (strong, nonatomic, readonly) NSLocale *permanentLocale;
+@property (strong, nonatomic, readonly) NSArray <NSString *> *permanentTables;
 
-// ******* KEY ******* //
+
+// Key
 - (NSString *)localizedStringAtKey: (NSString *)key;
 
-// ******* KEY, COMMENT ******* //
+// Key, comment
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment;
 
-// ******* KEY, COMMENT, TABLE ******* //
+// Key, comment, table
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                         tableName:(NSString *)tableName;
-
+                            tables:(NSArray <NSString *> *)tables;
 
 @end

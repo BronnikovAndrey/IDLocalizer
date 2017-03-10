@@ -10,10 +10,6 @@
 
 @interface NSBundle (IDBundle)
 
-+ (NSBundle *)bundleWithLanguageCode: (NSString *)languageCode;
-+ (NSBundle *)currentBundle;
-
-+ (NSBundle *)englishBundle;
-+ (NSBundle *)russianBundle;
++ (NSBundle *)bundleWithLocale: (NSLocale *)locale;
 
 @end

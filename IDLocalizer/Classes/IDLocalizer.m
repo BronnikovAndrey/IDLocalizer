@@ -13,8 +13,8 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
 
 @interface IDLocalizer ()
 
-@property (strong, nonatomic, readwrite) NSBundle *permanentBundle;
-@property (strong, nonatomic, readwrite) NSString *permanentTable;
+@property (strong, nonatomic, readwrite) NSLocale *permanentLocale;
+@property (strong, nonatomic, readwrite) NSArray <NSString *> *permanentTables;
 
 @end
 
@@ -23,62 +23,65 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
 #pragma mark - Initializators
 + (instancetype)defaultLocalizer {
     if (self == [self class]) {
-        IDLocalizer *localizer = [[[self class] alloc] initWithTable:kDefaultTableNameKey bundle:[NSBundle currentBundle] localizablePostfix:YES];
+        NSLocale *locale = [NSLocale currentLocale];
+        NSArray *tables = @[kDefaultTableNameKey];
+        IDLocalizer *localizer = [[[self class] alloc] initWithLocale:locale tables:tables];
         return localizer;
     }
     return nil;
 }
 
-- (instancetype)initWithTable: (NSString *)table {
-
-    return [self initWithTable:table bundle:self.permanentBundle localizablePostfix:YES];
+- (instancetype)initWithLocale: (NSLocale *)locale
+                         table: (NSString *)table {
+    return [self initWithLocale:locale tables:@[table]];
 }
 
-- (instancetype)initWithTable:(NSString *)table
-                       bundle:(NSBundle *)bundle
-           localizablePostfix:(BOOL)postfix {
-    
+- (instancetype)initWithLocale: (NSLocale *)locale
+                        tables: (NSArray <NSString *>*)tables {
     self = [super init];
     if (self) {
-        NSString *totalTableString = table;
-        if (postfix) {
-            totalTableString = [totalTableString stringByAppendingString:kDefaultTableNameKey];
-        }
-        _permanentTable = totalTableString;
-        _permanentBundle = bundle;
+        _permanentLocale = locale;
+        _permanentTables = tables;
     }
     return self;
 }
 
 #pragma mark - Localizing
 - (NSString *)localizedStringAtKey: (NSString *)key {
-    
     return [self localizedStringAtKey:key comment:nil];
 }
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment {
     
-    return [self localizedStringAtKey:key comment:comment tableName:self.permanentTable];
+    return [self localizedStringAtKey:key comment:comment tables:self.permanentTables];
 }
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                         tableName:(NSString *)tableName {
+                            tables:(NSArray <NSString *> *)tables {
     
-    return [self localizedStringAtKey:key comment:comment tableName:tableName bundle:self.permanentBundle];
+    return [self localizedStringAtKey:key comment:comment tables:tables locale:self.permanentLocale];
 }
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                         tableName:(NSString *)tableName
-                            bundle:(NSBundle *)bundle {
+                            tables:(NSArray <NSString *> *)tables
+                            locale:(NSLocale *)locale {
     
-    NSString *localizedString = [bundle localizedStringForKey:key value:key table:tableName];
-    if (!localizedString || [localizedString isEqualToString:key]) {
-        localizedString = [[NSBundle mainBundle] localizedStringForKey:key value:key table:nil];
+    NSBundle *bundle = [NSBundle bundleWithLocale:locale];
+    
+    NSString *localizedString = nil;
+    for (NSString *table in self.permanentTables) {
+        NSString *stringsPath = [bundle pathForResource:table ofType:@"strings"];
+        NSDictionary *dictionary = [NSDictionary dictionaryWithContentsOfFile:stringsPath];
+        
+        if ([dictionary.allKeys containsObject:key]) {
+            localizedString = [bundle localizedStringForKey:key value:key table:table];
+            break;
+        }
     }
-    return localizedString;
+    return nil;
 }
 
 #pragma mark - Runtime
@@ -125,5 +128,14 @@ NSArray *loc_allProtocolMethods(Protocol *protocol) {
     Protocol *protocol = (NSProtocolFromString(protocolString));
     return protocol;
 }
+
+
+
+
+
+//+ (NSBundle *)currentBundle {
+//    NSString *currentLanguageCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+//    return [self bundleWithLanguageCode:currentLanguageCode];
+//}
 
 @end
