@@ -78,7 +78,7 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
         
         if ([dictionary.allKeys containsObject:key]) {
             localizedString = [bundle localizedStringForKey:key value:key table:table];
-            break;
+            return localizedString;
         }
     }
     return nil;
@@ -114,9 +114,14 @@ NSArray *loc_allProtocolMethods(Protocol *protocol) {
     BOOL isMethodFromCurrent =
     [loc_allProtocolMethods (currentProtocol) containsObject:selectorString];
     
+    
+    NSString *newValue = [self localizedStringAtKey: selectorString];
+    [anInvocation setReturnValue:&newValue];
+    
+    // TODO: Protocols in runtime
     if (isMethodFromCurrent || isMethodFromRoot) {
-        NSString *newValue = [self localizedStringAtKey: selectorString];
-        [anInvocation setReturnValue:&newValue];
+       // NSString *newValue = [self localizedStringAtKey: selectorString];
+       // [anInvocation setReturnValue:&newValue];
     }
     else {
         NSLog(@"WARNING: Localizer didn't find method, which returns string \"%@\". Check method in your localize module protocol or IDLocalizerProtocol.h", selectorString);
