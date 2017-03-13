@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "NSBundle+IDBundle.h"
+#import "IDLocalizerItem.h"
 
 @interface IDLocalizer : NSObject
 
@@ -15,15 +16,15 @@
 + (instancetype)defaultLocalizer;
 
 - (instancetype)initWithLocale: (NSLocale *)locale
-                         table: (NSString *)table;
+                         item: (IDLocalizerItem *)item;
 
 - (instancetype)initWithLocale: (NSLocale *)locale
-                        tables: (NSArray <NSString *>*)tables;
+                         items: (NSArray <IDLocalizerItem *>*)items;
 
 
 // ******* PROPERTIES ******* //
 @property (strong, nonatomic, readonly) NSLocale *permanentLocale;
-@property (strong, nonatomic, readonly) NSArray <NSString *> *permanentTables;
+@property (strong, nonatomic, readonly) NSArray <IDLocalizerItem *> *permanentItems;
 
 
 // Key
@@ -36,6 +37,6 @@
 // Key, comment, table
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                            tables:(NSArray <NSString *> *)tables;
+                             items:(NSArray <IDLocalizerItem *>*)items;
 
 @end

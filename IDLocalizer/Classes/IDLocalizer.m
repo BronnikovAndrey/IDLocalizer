@@ -10,11 +10,12 @@
 #import <objc/runtime.h>
 
 static NSString * const kDefaultTableNameKey = @"Localizable";
+static NSString * const kDefaultProtocolNameKey = @"IDLocalizerProtocol";
 
 @interface IDLocalizer ()
 
 @property (strong, nonatomic, readwrite) NSLocale *permanentLocale;
-@property (strong, nonatomic, readwrite) NSArray <NSString *> *permanentTables;
+@property (strong, nonatomic, readwrite) NSArray <IDLocalizerItem *> *permanentItems;
 
 @end
 
@@ -24,24 +25,23 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
 + (instancetype)defaultLocalizer {
     if (self == [self class]) {
         NSLocale *locale = [NSLocale currentLocale];
-        NSArray *tables = @[kDefaultTableNameKey];
-        IDLocalizer *localizer = [[[self class] alloc] initWithLocale:locale tables:tables];
+        IDLocalizerItem *item = [[IDLocalizerItem alloc] initWithTable:kDefaultTableNameKey
+                                                        protocolString:kDefaultProtocolNameKey];
+        IDLocalizer *localizer = [[[self class] alloc] initWithLocale:locale item:item];
         return localizer;
     }
     return nil;
 }
 
-- (instancetype)initWithLocale: (NSLocale *)locale
-                         table: (NSString *)table {
-    return [self initWithLocale:locale tables:@[table]];
+- (instancetype)initWithLocale:(NSLocale *)locale item:(IDLocalizerItem *)item {
+    return [self initWithLocale:locale items:@[item]];
 }
 
-- (instancetype)initWithLocale: (NSLocale *)locale
-                        tables: (NSArray <NSString *>*)tables {
+- (instancetype)initWithLocale:(NSLocale *)locale items:(NSArray<IDLocalizerItem *> *)items {
     self = [super init];
     if (self) {
         _permanentLocale = locale;
-        _permanentTables = tables;
+        _permanentItems = items;
     }
     return self;
 }
@@ -53,29 +53,27 @@ static NSString * const kDefaultTableNameKey = @"Localizable";
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment {
-    
-    return [self localizedStringAtKey:key comment:comment tables:self.permanentTables];
+    return [self localizedStringAtKey:key comment:comment items:self.permanentItems];
 }
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                            tables:(NSArray <NSString *> *)tables {
+                             items:(NSArray <IDLocalizerItem *> *)items {
     
-    return [self localizedStringAtKey:key comment:comment tables:tables locale:self.permanentLocale];
+    return [self localizedStringAtKey:key comment:comment items:items locale:self.permanentLocale];
 }
 
 - (NSString *)localizedStringAtKey:(NSString *)key
                            comment:(NSString *)comment
-                            tables:(NSArray <NSString *> *)tables
+                             items:(NSArray <IDLocalizerItem *> *)items
                             locale:(NSLocale *)locale {
     
     NSBundle *bundle = [NSBundle bundleWithLocale:locale];
-    
     NSString *localizedString = nil;
-    for (NSString *table in self.permanentTables) {
+    for (IDLocalizerItem *item in self.permanentItems) {
+        NSString *table = item.table;
         NSString *stringsPath = [bundle pathForResource:table ofType:@"strings"];
         NSDictionary *dictionary = [NSDictionary dictionaryWithContentsOfFile:stringsPath];
-        
         if ([dictionary.allKeys containsObject:key]) {
             localizedString = [bundle localizedStringForKey:key value:key table:table];
             return localizedString;
@@ -98,49 +96,54 @@ NSArray *loc_allProtocolMethods(Protocol *protocol) {
         }
         free(methodDescriptions);
     }
-    
     return methodList;
+}
+
+
+
++ (BOOL)respondsToSelector:(SEL)aSelector {
+    return [super respondsToSelector:aSelector];
+}
+
++ (BOOL)resolveInstanceMethod:(SEL)name {
+    return [super resolveInstanceMethod:name];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+    return [super forwardingTargetForSelector:aSelector];
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+    return [NSMethodSignature signatureWithObjCTypes:"@@@"];
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
     NSString *selectorString = NSStringFromSelector([anInvocation selector]);
+
+    /*
+    NSArray *protocols = [self.permanentItems valueForKeyPath:@"protocol"];
     
-    Protocol *rootProtocol = [self protocolOfClass:[IDLocalizer class]];
-    Protocol *currentProtocol = [self protocolOfClass:[self class]];
+    BOOL isMethodInProtocol = NO;
+    for (Protocol *protocol in protocols) {
+        isMethodInProtocol =
+        [loc_allProtocolMethods (protocol) containsObject:selectorString];
+        if (isMethodInProtocol) {
+            break;
+        }
+    }
     
-    BOOL isMethodFromRoot =
-    [loc_allProtocolMethods (rootProtocol) containsObject:selectorString];
-    
-    BOOL isMethodFromCurrent =
-    [loc_allProtocolMethods (currentProtocol) containsObject:selectorString];
-    
-    
-    NSString *newValue = [self localizedStringAtKey: selectorString];
-    [anInvocation setReturnValue:&newValue];
-    
-    // TODO: Protocols in runtime
-    if (isMethodFromCurrent || isMethodFromRoot) {
-       // NSString *newValue = [self localizedStringAtKey: selectorString];
-       // [anInvocation setReturnValue:&newValue];
+    if (isMethodInProtocol) {
+     */
+        // TODO: Check protocol have descriptions with loc_allProtocolMethods:
+        NSString *newValue = [self localizedStringAtKey: selectorString];
+        NSAssert1(newValue,  @"Localizer didn't find method ***%@***", selectorString);
+        [anInvocation setReturnValue:&newValue];
+    /*
     }
     else {
-        NSLog(@"WARNING: Localizer didn't find method, which returns string \"%@\". Check method in your localize module protocol or IDLocalizerProtocol.h", selectorString);
+        NSAssert1(NO, @"Localizer didn't find method, which returns string %@", selectorString);
     }
+     */
 }
-
-- (Protocol *)protocolOfClass: (Class)class {
-    NSString *protocolString = [NSString stringWithFormat:@"%@Protocol", NSStringFromClass(class)];
-    Protocol *protocol = (NSProtocolFromString(protocolString));
-    return protocol;
-}
-
-
-
-
-
-//+ (NSBundle *)currentBundle {
-//    NSString *currentLanguageCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
-//    return [self bundleWithLanguageCode:currentLanguageCode];
-//}
 
 @end
